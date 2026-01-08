@@ -47,10 +47,10 @@ function Home() {
 
       <ul>
         {students.map((student) => (
-          <li key={student.id} className="flex justify-between w-64 mb-2">
+          <li key={student._id} className="flex justify-between w-64 mb-2">
             {student.name}
             <button
-              onClick={() => handleDelete(student.id)}
+              onClick={() => handleDelete(student._id)}
               className="text-red-600"
             >
               Delete

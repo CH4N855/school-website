@@ -2,53 +2,29 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
+const connectDB = require('./config/db');
+const Student = require('./models/Student');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
-
+connectDB();
 
 app.use(cors());
 app.use(express.json());
 
-
-app.get('/', (req, res) => {
-res.send('School API is running');
+app.get('/api/students', async (req, res) => {
+  const students = await Student.find();
+  res.json(students);
 });
 
-
-const students = [
-{ id: 1, name: 'Alice' },
-{ id: 2, name: 'Bob' },
-];
-app.post('/api/students', (req, res) => {
-const newStudent = {
-id: students.length + 1,
-name: req.body.name,
-};
-
-
-students.push(newStudent);
-res.status(201).json(newStudent);
+app.post('/api/students', async (req, res) => {
+  const student = new Student({ name: req.body.name });
+  const savedStudent = await student.save();
+  res.status(201).json(savedStudent);
 });
 
-
-app.delete('/api/students/:id', (req, res) => {
-const id = parseInt(req.params.id);
-const index = students.findIndex(s => s.id === id);
-
-
-if (index === -1) {
-return res.status(404).json({ message: 'Student not found' });
-}
-
-
-students.splice(index, 1);
-res.json({ message: 'Student deleted' });
+app.delete('/api/students/:id', async (req, res) => {
+  await Student.findByIdAndDelete(req.params.id);
+  res.json({ message: 'Student deleted' });
 });
 
-app.get('/api/students', (req, res) => {
-res.json(students);
-});
-
-
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(5000, () => console.log('Server running on port 5001'));
